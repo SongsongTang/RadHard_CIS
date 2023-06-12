@@ -22,7 +22,8 @@
 
 module spi_module
 #(
-    parameter DATA_WIDTH = 32
+    parameter DATA_WIDTH = 32,
+    parameter RD1_WR0 = 1'b1,
 )
 (
     input wire clk,
@@ -40,9 +41,11 @@ module spi_module
     output reg sdo_ready_o,
 
     // SDI Interface
+    input wire clk_i,
+    input wire sdi_ready_i,
+    output reg sdi_ready_o,
     output reg [DATA_WIDTH-1:0] sdi_data_o,
-    output reg sdi_valid_o,
-    input wire sdi_ready_i
+    output reg sdi_valid_o
 
     //// FSM Interface
     //,output reg [5:0] st_cur
@@ -53,8 +56,8 @@ module spi_module
 );
 
 // parallel to serial counter
-reg [$clog2(DATA_WIDTH):0] sdo_counter_r;
-reg [$clog2(DATA_WIDTH):0] sdi_counter_r;
+reg [$clog2(DATA_WIDTH)-1:0] sdo_counter_r;
+reg [$clog2(DATA_WIDTH)-1:0] sdi_counter_r;
 
 // SDO DATA REGISTER
 reg [DATA_WIDTH-1:0] sdo_data_r;
@@ -80,16 +83,17 @@ reg [DATA_WIDTH-1:0] sdo_data_r;
 //end
 
 // machine state decode
-localparam IDLE         = 6'b000_001;
-localparam WRITE_VALID  = 6'b000_010;
-localparam WRITE_DATA   = 6'b000_100;
-localparam WRITE_DONE   = 6'b001_000;
-localparam READ_READY   = 6'b010_000;
-localparam READ_DATA    = 6'b100_000;
+localparam IDLE         = 7'b0_000_001;
+localparam WRITE_VALID  = 7'b0_000_010;
+localparam WRITE_DATA   = 7'b0_000_100;
+localparam WRITE_DONE   = 7'b0_001_000;
+localparam READ_READY   = 7'b0_010_000;
+localparam READ_DATA    = 7'b0_100_000;
+localparam READ_DONE    = 7'b1_000_000;
 
 // machine variable
-reg [5:0] st_nxt;
-reg [5:0] st_cur = IDLE;
+reg [6:0] st_nxt;
+reg [6:0] st_cur = IDLE;
 
 // (1) state transfer
 always @(posedge clk or negedge rst_n) begin
@@ -127,7 +131,7 @@ always @(*) begin
         end
 
         WRITE_DATA: begin
-            if (sdo_counter_r <= DATA_WIDTH) begin
+            if (sdo_counter_r < DATA_WIDTH) begin
                 st_nxt = WRITE_DATA;
             end
             else begin
@@ -147,7 +151,7 @@ always @(*) begin
         end
 
         READ_READY: begin
-            if (sdi_counter_r <= DATA_WIDTH) begin
+            if (sdi_ready_i == 1'b1) begin
                 st_nxt = READ_READY;
             end
             else begin
@@ -156,6 +160,15 @@ always @(*) begin
         end
 
         READ_DATA: begin
+            if (sdi_counter_r < DATA_WIDTH) begin
+                st_nxt = READ_DATA;
+            end
+            else begin
+                st_nxt = READ_DONE;
+            end
+        end
+
+        READ_DONE: begin
             if (sdi_ready_i == 1'b1) begin
                 st_nxt = READ_READY;
             end
@@ -171,24 +184,26 @@ end
 // (3) determine output signal, based on current state and input (Mealy) or current state (Moore)
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
-        sdi_counter_r <= 1'b1;
-        sdo_counter_r <= 1'b1;
-        sdo_data_r <= 1'b0;
-        sdo_ready_o <= 1'b0;
+        sdi_counter_r <= 1'b0;
         sdi_valid_o <= 1'b0;
         sdi_data_o <= 1'b0;
+        sdi_ready_o <= 1'b1;
+        sdo_counter_r <= 1'b0;
+        sdo_data_r <= 1'b0;
+        sdo_ready_o <= 1'b0;
         mosi_o <= 1'b0;
         cs_n_o <= 1'b1;
     end
     else begin
         case (st_nxt)
             IDLE: begin
-                sdi_counter_r <= 1'b1;
-                sdo_counter_r <= 1'b1;
-                sdo_data_r <= 1'b0;
-                sdo_ready_o <= 1'b0;
+                sdi_counter_r <= 1'b0;
                 sdi_valid_o <= 1'b0;
                 sdi_data_o <= 1'b0;
+                sdi_ready_o <= 1'b1;
+                sdo_counter_r <= 1'b0;
+                sdo_data_r <= 1'b0;
+                sdo_ready_o <= 1'b0;
                 mosi_o <= 1'b0;
                 cs_n_o <= 1'b1;
             end
@@ -200,22 +215,28 @@ always @(posedge clk or negedge rst_n) begin
             WRITE_DATA: begin
                 cs_n_o <= 1'b0;
                 sdo_counter_r <= sdo_counter_r + 1'b1;
-                mosi_o <= sdo_data_r[DATA_WIDTH-sdo_counter_r];
+                mosi_o <= sdo_data_r[(DATA_WIDTH-1)-sdo_counter_r];
                 sdo_ready_o <= 1'b1;
             end
 
             WRITE_DONE: begin
-                sdo_counter_r <= 1'b1;
+                sdo_counter_r <= 1'b0;
                 sdo_ready_o <= 1'b0;
                 mosi_o <= 1'b0;
                 cs_n_o <= 1'b0;
             end
 
             READ_READY: begin
-                cs_n_o <= 1'b0;
+                sdi_counter_r <= 1'b0;
+                sdi_valid_o <= 1'b0;
+                sdi_data_o <= 1'b0;
+                sdi_ready_o <= 1'b0;
+            end
+
+            READ_DATA: begin
                 sdi_counter_r <= sdi_counter_r + 1'b1;
-                sdi_data_o[DATA_WIDTH-sdi_counter_r] <= miso_i;
-                if (sdi_counter_r == DATA_WIDTH) begin
+                sdi_data_o[(DATA_WIDTH-1)-sdi_counter_r] <= miso_i;
+                if (sdi_counter_r == (DATA_WIDTH-1)) begin
                     sdi_valid_o <= 1'b1;
                 end
                 else begin
@@ -223,16 +244,18 @@ always @(posedge clk or negedge rst_n) begin
                 end
             end
 
-            READ_DATA: begin
-                sdi_counter_r <= 1'b1;
+            READ_DONE: begin
+                sdi_counter_r <= 1'b0;
                 sdi_valid_o <= 1'b0;
                 sdi_data_o <= 1'b0;
+                sdi_ready_o <= 1'b1;
             end
         endcase
     end
 end
 
-assign sck_o = (st_cur == WRITE_DATA) ? ~clk : 0;
+//assign sck_o = ((st_cur == WRITE_DATA) || (st_cur == READ_DATA)) ? ~clk : RD1_WR0;
+assign sck_o = (st_cur == WRITE_DATA) ? ~clk : (st_cur == READ_DATA) ? clk : RD1_WR0;
 //assign sck_o = ~clk;
 
 endmodule

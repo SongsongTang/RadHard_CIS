@@ -23,7 +23,7 @@
 module spi_module_tb;
 
     // Parameters
-    parameter DATA_WIDTH = 24;
+    parameter DATA_WIDTH = 32;
     parameter CLK_PERIOD = 10; // Clock period in ns
 
     // Signals
@@ -39,9 +39,9 @@ module spi_module_tb;
     wire sdo_ready_o;
     wire [DATA_WIDTH-1:0] sdi_data_o;
     wire sdi_valid_o;
-    //wire [5:0] st_cur;
-    //wire [5:0] st_nxt;
-    //wire [$clog2(DATA_WIDTH):0] sdo_counter_r;
+    wire [5:0] st_cur;
+    wire [5:0] st_nxt;
+    wire [$clog2(DATA_WIDTH):0] sdo_counter_r;
 
     // Instantiate SPI module
     spi_module #(.DATA_WIDTH(DATA_WIDTH)) spi (
@@ -73,7 +73,7 @@ module spi_module_tb;
         sdo_valid_i = 0;
         sdi_ready_i = 0;
         //sdo_data_i = 0;
-        sdo_data_i = 24'hAB;
+        sdo_data_i = 32'hAB;
         miso_i = 0;
 
         // Reset
