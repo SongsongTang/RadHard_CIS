@@ -1,10 +1,10 @@
 -- Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2017.4 (win64) Build 2086221 Fri Dec 15 20:55:39 MST 2017
--- Date        : Sun Jun 11 11:59:01 2023
+-- Date        : Tue Jun 13 23:01:51 2023
 -- Host        : DESKTOP-JFN1RUN running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode synth_stub -rename_top dac_cfg -prefix
---               dac_cfg_ dac_cfg_stub.vhdl
+-- Command     : write_vhdl -force -mode synth_stub
+--               D:/Dropbox/Verilog_HDL/RadHard_CIS_Pixel_Array_Testing/TB/TB.srcs/sources_1/ip/dac_cfg/dac_cfg_stub.vhdl
 -- Design      : dac_cfg
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7z035ffg676-2

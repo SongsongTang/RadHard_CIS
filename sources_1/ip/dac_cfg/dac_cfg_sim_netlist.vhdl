@@ -1,10 +1,10 @@
 -- Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2017.4 (win64) Build 2086221 Fri Dec 15 20:55:39 MST 2017
--- Date        : Sun Jun 11 11:59:01 2023
+-- Date        : Tue Jun 13 23:01:51 2023
 -- Host        : DESKTOP-JFN1RUN running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode funcsim -rename_top dac_cfg -prefix
---               dac_cfg_ dac_cfg_sim_netlist.vhdl
+-- Command     : write_vhdl -force -mode funcsim
+--               D:/Dropbox/Verilog_HDL/RadHard_CIS_Pixel_Array_Testing/TB/TB.srcs/sources_1/ip/dac_cfg/dac_cfg_sim_netlist.vhdl
 -- Design      : dac_cfg
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -37,6 +37,8 @@ entity dac_cfg_vio_v3_0_17_decoder is
     \Bus_Data_out_reg[15]\ : in STD_LOGIC_VECTOR ( 15 downto 0 );
     \Probe_out_reg_int_reg[15]\ : in STD_LOGIC_VECTOR ( 15 downto 0 )
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of dac_cfg_vio_v3_0_17_decoder : entity is "vio_v3_0_17_decoder";
 end dac_cfg_vio_v3_0_17_decoder;
 
 architecture STRUCTURE of dac_cfg_vio_v3_0_17_decoder is
@@ -880,6 +882,8 @@ entity dac_cfg_vio_v3_0_17_probe_in_one is
     probe_in0 : in STD_LOGIC_VECTOR ( 31 downto 0 );
     \^clk\ : in STD_LOGIC
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of dac_cfg_vio_v3_0_17_probe_in_one : entity is "vio_v3_0_17_probe_in_one";
 end dac_cfg_vio_v3_0_17_probe_in_one;
 
 architecture STRUCTURE of dac_cfg_vio_v3_0_17_probe_in_one is
@@ -4400,6 +4404,8 @@ entity dac_cfg_vio_v3_0_17_probe_out_one is
     Committ_2_reg : in STD_LOGIC_VECTOR ( 0 to 0 );
     \^clk\ : in STD_LOGIC
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of dac_cfg_vio_v3_0_17_probe_out_one : entity is "vio_v3_0_17_probe_out_one";
 end dac_cfg_vio_v3_0_17_probe_out_one;
 
 architecture STRUCTURE of dac_cfg_vio_v3_0_17_probe_out_one is
@@ -5450,6 +5456,8 @@ entity dac_cfg_xsdbs_v1_0_2_xsdbs is
   attribute C_XDEVICEFAMILY of dac_cfg_xsdbs_v1_0_2_xsdbs : entity is "zynq";
   attribute C_XSDB_SLAVE_TYPE : integer;
   attribute C_XSDB_SLAVE_TYPE of dac_cfg_xsdbs_v1_0_2_xsdbs : entity is 33;
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of dac_cfg_xsdbs_v1_0_2_xsdbs : entity is "xsdbs_v1_0_2_xsdbs";
   attribute dont_touch : string;
   attribute dont_touch of dac_cfg_xsdbs_v1_0_2_xsdbs : entity is "true";
 end dac_cfg_xsdbs_v1_0_2_xsdbs;
@@ -8417,6 +8425,8 @@ entity dac_cfg_vio_v3_0_17_probe_out_all is
     internal_cnt_rst : in STD_LOGIC;
     Q : in STD_LOGIC_VECTOR ( 15 downto 0 )
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of dac_cfg_vio_v3_0_17_probe_out_all : entity is "vio_v3_0_17_probe_out_all";
 end dac_cfg_vio_v3_0_17_probe_out_all;
 
 architecture STRUCTURE of dac_cfg_vio_v3_0_17_probe_out_all is
@@ -11765,6 +11775,8 @@ entity dac_cfg_vio_v3_0_17_vio is
   attribute LC_TOTAL_PROBE_IN_WIDTH of dac_cfg_vio_v3_0_17_vio : entity is 32;
   attribute LC_TOTAL_PROBE_OUT_WIDTH : integer;
   attribute LC_TOTAL_PROBE_OUT_WIDTH of dac_cfg_vio_v3_0_17_vio : entity is 32;
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of dac_cfg_vio_v3_0_17_vio : entity is "vio_v3_0_17_vio";
   attribute dont_touch : string;
   attribute dont_touch of dac_cfg_vio_v3_0_17_vio : entity is "true";
 end dac_cfg_vio_v3_0_17_vio;
