@@ -32,7 +32,39 @@ module adc_read_module(
     //,output reg [15:0] adc_data_o
     );
 
-    reg [15:0] adc_data_r;
+    wire [15:0] adc_data_r;
     wire enable;
+
+    adc_tri adc_tri_inst (
+        .clk(clk_adc),
+        .probe_in0(adc_data_r),
+        .probe_out0(enable)
+    );
+
+    spi_module 
+    #(
+        .DATA_WIDTH(16),
+        .RD1_WR0(1'b1)
+    )
+    spi_module_inst
+    (
+        .clk_i(clk_adc),
+        .rst_n(rst_n),
+
+        .sck_o(adc_sck_o),
+        .cs_n_o(),
+        .mosi_o(),
+        .sck_i(adc_sck_i),
+        .miso_i(adc_miso_i),
+
+        .sdo_data_i(),
+        .sdo_valid_i(),
+        .sdo_ready_o(),
+
+        .sdi_ready_i(enable),
+        .sdi_ready_o(),
+        .sdi_data_o(adc_data_r),
+        .sdi_valid_o()
+    );
 
 endmodule
