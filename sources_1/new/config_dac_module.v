@@ -26,8 +26,7 @@ module config_dac_module(
 
     output wire dac_sck_o,
     output wire dac_cs_n_o,
-    output wire dac_mosi_o,
-    input wire dac_miso_i
+    output wire dac_mosi_o
     );
 
     wire [31:0] sdo_data_w;
@@ -78,7 +77,7 @@ module config_dac_module(
         .cs_n_o(dac_cs_n_o),
         .mosi_o(dac_mosi_o),
         .sck_i(),
-        .miso_i(dac_miso_i),
+        .miso_i(),
 
         .sdo_data_i(sdo_data_w),
         .sdo_valid_i(sdo_valid_w),

@@ -26,7 +26,7 @@ module spi_module
     parameter RD1_WR0 = 1'b1
 )
 (
-    input wire clk_i,
+    (* MARK_DEBUG = "TRUE" *) input wire clk_i,
     input wire rst_n,  // active low
 
     // SPI Interface
@@ -67,7 +67,7 @@ module spi_module
     //,output reg [$clog2(DATA_WIDTH):0] sdo_counter_r
 );
 
-wire clk_w;
+//wire clk_w;
 
 // parallel to serial counter
 (* MARK_DEBUG = "TRUE" *) reg [$clog2(DATA_WIDTH):0] sdo_counter_r;
@@ -114,7 +114,7 @@ localparam READ_DONE    = 7'b1_000_000;
 (* MARK_DEBUG = "TRUE" *) reg [6:0] st_cur = IDLE;
 
 // (1) state transfer
-always @(posedge clk_w or negedge rst_n) begin
+always @(posedge clk_i or negedge rst_n) begin
     if (!rst_n) begin
         st_cur <= IDLE;
     end
@@ -200,7 +200,7 @@ always @(*) begin
 end
 
 // (3) determine output signal, based on current state and input (Mealy) or current state (Moore)
-always @(posedge clk_w or negedge rst_n) begin
+always @(posedge clk_i or negedge rst_n) begin
     if (!rst_n) begin
         sdi_counter_r <= 1'b0;
         sdi_valid_o <= 1'b0;
@@ -275,6 +275,6 @@ end
 assign sck_o = (st_cur == WRITE_DATA) ? ~clk_i : (st_cur == READ_DATA) ? clk_i : RD1_WR0;
 //assign clk_w = ((st_cur == IDLE) || (st_cur == WRITE_VALID) || (st_cur == WRITE_DATA) || (st_cur == WRITE_DONE)) ? clk_i : ((st_cur == READ_READY) || (st_cur == READ_DATA) || (st_cur == READ_DONE)) ? sck_i : clk_i;
 //assign clk_w = clk_i;
-assign clk_w = (st_cur == READ_DATA) ? sck_i : clk_i;
+//assign clk_w = (st_cur == READ_DATA) ? sck_i : clk_i;
 
 endmodule

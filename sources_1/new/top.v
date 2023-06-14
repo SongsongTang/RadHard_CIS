@@ -21,22 +21,29 @@
 
 
 module top(
-    input wire dac_clk,
+    input wire clk_in,
     input wire rst_n,  // active low
 
     output wire dac_sck_o,
     output wire dac_cs_n_o,
-    output wire dac_mosi_o,
-    input wire dac_miso_i
+    output wire dac_mosi_o
+    );
 
+    clk_mmcm clk_mmcm_inst (
+        .clk_in(clk_in),
+        .resetn(rst_n),
+        .clk_dac(clk_dac),
+        .clk_mux(),
+        .clk_adc(),
+        .clk_ic(),
+        .locked()
     );
 
     config_dac_module config_dac_module_inst (
-        .dac_clk(dac_clk),
+        .dac_clk(clk_dac),
         .rst_n(rst_n),
         .dac_sck_o(dac_sck_o),
         .dac_cs_n_o(dac_cs_n_o),
-        .dac_mosi_o(dac_mosi_o),
-        .dac_miso_i(dac_miso_i)
+        .dac_mosi_o(dac_mosi_o)
     );
 endmodule
