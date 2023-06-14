@@ -35,6 +35,10 @@ module adc_read_module(
     wire [15:0] adc_data_w;
     wire enable;
     wire adc_sdi_valid_o;
+    wire adc_ready_o_w;
+    wire adc_ready_i_w;
+    assign adc_cnv_n_o = adc_ready_o_w | adc_ready_i_w;
+    //assign adc_cnv_n_o = adc_ready_i_w;
     reg [15:0] adc_data_r;
 
     always @(posedge clk_adc or negedge rst_n) begin
@@ -66,7 +70,7 @@ module adc_read_module(
         end
     end
 
-    assign adc_cnv_n_o = enable1 ^ enable2;
+    assign adc_ready_i_w = enable1 ^ enable2;
 
     spi_module 
     #(
@@ -88,8 +92,8 @@ module adc_read_module(
         .sdo_valid_i(),
         .sdo_ready_o(),
 
-        .sdi_ready_i(adc_cnv_n_o),
-        .sdi_ready_o(),
+        .sdi_ready_i(adc_ready_i_w),
+        .sdi_ready_o(adc_ready_o_w),
         .sdi_data_o(adc_data_w),
         .sdi_valid_o(adc_sdi_valid_o)
     );

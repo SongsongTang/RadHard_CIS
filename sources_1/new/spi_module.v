@@ -168,12 +168,7 @@ always @(*) begin
         end
 
         READ_READY: begin
-            if (sdi_ready_i == 1'b1) begin
-                st_nxt = READ_READY;
-            end
-            else begin
-                st_nxt = READ_DATA;
-            end
+            st_nxt = READ_DATA;
         end
 
         READ_DATA: begin
@@ -187,12 +182,6 @@ always @(*) begin
 
         READ_DONE: begin
             st_nxt = READ_READY;
-            //if (sdi_ready_i == 1'b1) begin
-            //    st_nxt = READ_READY;
-            //end
-            //else begin
-            //    st_nxt = IDLE;
-            //end
         end
 
         default: st_nxt = IDLE;
@@ -249,6 +238,7 @@ always @(posedge clk_i or negedge rst_n) begin
                 sdi_valid_o <= 1'b0;
                 sdi_data_o <= 1'b0;
                 sdi_ready_o <= 1'b0;
+                //sdi_ready_i <= 1'b0;
             end
 
             READ_DATA: begin
@@ -267,6 +257,7 @@ always @(posedge clk_i or negedge rst_n) begin
                 sdi_valid_o <= 1'b0;
                 sdi_data_o <= 1'b0;
                 sdi_ready_o <= 1'b1;
+                //sdi_ready_i <= 1'b1;
             end
         endcase
     end
