@@ -30,18 +30,6 @@ module spi_module
     input wire rst_n,  // active low
 
     // SPI Interface
-    //output wire sck_o,
-    //output reg cs_n_o,
-    //output reg mosi_o,
-    //input wire sck_i,
-    //input wire miso_i,
-    
-    //// SDO Interface
-    //input wire [DATA_WIDTH-1:0] sdo_data_i,
-    //input wire sdo_valid_i,
-    //output reg sdo_ready_o,
-
-    // SPI Interface
     (* MARK_DEBUG = "TRUE" *) output wire sck_o,
     (* MARK_DEBUG = "TRUE" *) output reg cs_n_o,
     (* MARK_DEBUG = "TRUE" *) output reg mosi_o,
@@ -49,9 +37,9 @@ module spi_module
     (* MARK_DEBUG = "TRUE" *) input wire miso_i,
 
     // SDO Interface
-    input wire [DATA_WIDTH-1:0] sdo_data_i,
-    input wire sdo_valid_i,
-    output reg sdo_ready_o,
+    (* MARK_DEBUG = "TRUE" *)input wire [DATA_WIDTH-1:0] sdo_data_i,
+    (* MARK_DEBUG = "TRUE" *)input wire sdo_valid_i,
+    (* MARK_DEBUG = "TRUE" *)output reg sdo_ready_o,
 
     // SDI Interface
     (* MARK_DEBUG = "TRUE" *) input wire sdi_ready_i,
@@ -59,43 +47,15 @@ module spi_module
     (* MARK_DEBUG = "TRUE" *) output reg [DATA_WIDTH-1:0] sdi_data_o,
     (* MARK_DEBUG = "TRUE" *) output reg sdi_valid_o
 
-    //// FSM Interface
-    //,output reg [5:0] st_cur
-    //,output reg [5:0] st_nxt
-
-    //// Counter Interface
-    //,output reg [$clog2(DATA_WIDTH):0] sdo_counter_r
 );
 
-//wire clk_w;
 
 // parallel to serial counter
-reg [$clog2(DATA_WIDTH):0] sdo_counter_r;
-//reg [$clog2(DATA_WIDTH):0] sdo_counter_r;
+(* MARK_DEBUG = "TRUE" *) reg [$clog2(DATA_WIDTH):0] sdo_counter_r;
 (* MARK_DEBUG = "TRUE" *) reg [$clog2(DATA_WIDTH):0] sdi_counter_r;
 
 // SDO DATA REGISTER
 reg [DATA_WIDTH-1:0] sdo_data_r;
-//reg [DATA_WIDTH-1:0] sdo_data_r1;
-//reg [DATA_WIDTH-1:0] sdo_data_r2;
-//
-//// Extend SDO DATA REGISTER ONE CLOCK CYCLE
-//always @(posedge clk_i or negedge rst_n) begin
-//    if (!rst_n) begin
-//        sdo_data_r1 <= 0;
-//    end
-//    else begin
-//        sdo_data_r1 <= sdo_data_i;
-//    end
-//end
-//always @(negedge clk_i or negedge rst_n) begin
-//    if (!rst_n) begin
-//        sdo_data_r2 <= 0;
-//    end
-//    else begin
-//        sdo_data_r2 <= sdo_data_r1;
-//    end
-//end
 
 // machine state decode
 localparam IDLE         = 7'b0_000_001;
@@ -107,8 +67,6 @@ localparam READ_DATA    = 7'b0_100_000;
 localparam READ_DONE    = 7'b1_000_000;
 
 // machine variable
-//reg [6:0] st_nxt;
-//reg [6:0] st_cur = IDLE;
 (* MARK_DEBUG = "TRUE" *) reg [6:0] st_nxt;
 (* MARK_DEBUG = "TRUE" *) reg [6:0] st_cur = IDLE;
 
@@ -153,7 +111,6 @@ always @(*) begin
             end
             else begin
                 st_nxt = WRITE_DONE;
-                //st_nxt = READ_READY;
             end
         end
 
@@ -162,7 +119,6 @@ always @(*) begin
                 st_nxt = WRITE_VALID;
             end
             else begin
-                //st_nxt = READ_READY;
                 st_nxt = IDLE;
             end
         end
@@ -238,7 +194,6 @@ always @(posedge clk_i or negedge rst_n) begin
                 sdi_valid_o <= 1'b0;
                 sdi_data_o <= 1'b0;
                 sdi_ready_o <= 1'b0;
-                //sdi_ready_i <= 1'b0;
             end
 
             READ_DATA: begin
@@ -257,15 +212,12 @@ always @(posedge clk_i or negedge rst_n) begin
                 sdi_valid_o <= 1'b0;
                 sdi_data_o <= 1'b0;
                 sdi_ready_o <= 1'b1;
-                //sdi_ready_i <= 1'b1;
             end
         endcase
     end
 end
 
+// determine output clock, based on current state
 assign sck_o = (st_cur == WRITE_DATA) ? ~clk_i : ((st_cur == READ_DATA) || (st_cur == READ_READY)) ? clk_i : RD1_WR0;
-//assign clk_w = ((st_cur == IDLE) || (st_cur == WRITE_VALID) || (st_cur == WRITE_DATA) || (st_cur == WRITE_DONE)) ? clk_i : ((st_cur == READ_READY) || (st_cur == READ_DATA) || (st_cur == READ_DONE)) ? sck_i : clk_i;
-//assign clk_w = clk_i;
-//assign clk_w = (st_cur == READ_DATA) ? sck_i : clk_i;
 
 endmodule

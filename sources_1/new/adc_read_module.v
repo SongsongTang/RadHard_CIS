@@ -23,13 +23,10 @@
 module adc_read_module(
     input wire clk_adc,
     input wire rst_n,  // active low
-
     input wire adc_sck_i,
     input wire adc_miso_i,
     output wire adc_sck_o,
     output wire adc_cnv_n_o
-
-    //,output reg [15:0] adc_data_o
     );
 
     wire [15:0] adc_data_w;
@@ -38,9 +35,9 @@ module adc_read_module(
     wire adc_ready_o_w;
     wire adc_ready_i_w;
     assign adc_cnv_n_o = adc_ready_o_w | adc_ready_i_w;
-    //assign adc_cnv_n_o = adc_ready_i_w;
-    reg [15:0] adc_data_r;
 
+    // output adc data when one conversion is done
+    reg [15:0] adc_data_r;
     always @(posedge clk_adc or negedge rst_n) begin
         if (!rst_n) begin
             adc_data_r <= 0;
@@ -58,8 +55,8 @@ module adc_read_module(
         .probe_out0(enable)
     );
 
+    // detect edge of enable signal
     reg enable1, enable2;
-
     always @(posedge clk_adc or negedge rst_n) begin
         if (!rst_n) begin
             enable1 <= 0;
@@ -69,7 +66,6 @@ module adc_read_module(
             enable2 <= enable1;
         end
     end
-
     assign adc_ready_i_w = enable1 ^ enable2;
 
     spi_module 

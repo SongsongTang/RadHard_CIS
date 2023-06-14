@@ -40,7 +40,7 @@ module config_dac_module(
 
     assign ena1 = enable[0];
 
-
+    // detect edge of enable signal
     always @(posedge dac_clk or negedge rst_n) begin
         if (!rst_n) begin
             ena2 <= 0;
@@ -51,7 +51,7 @@ module config_dac_module(
 
     assign sdo_valid_w = ena1 ^ ena2;
 
-
+    // VI/O IP
     dac_cfg dac_cfg_enable (
         .clk(dac_clk),
         .probe_in0(sdo_valid_w),
