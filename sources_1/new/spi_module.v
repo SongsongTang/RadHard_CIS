@@ -49,15 +49,15 @@ module spi_module
     (* MARK_DEBUG = "TRUE" *) input wire miso_i,
 
     // SDO Interface
-    (* MARK_DEBUG = "TRUE" *) input wire [DATA_WIDTH-1:0] sdo_data_i,
-    (* MARK_DEBUG = "TRUE" *) input wire sdo_valid_i,
-    (* MARK_DEBUG = "TRUE" *) output reg sdo_ready_o,
+    input wire [DATA_WIDTH-1:0] sdo_data_i,
+    input wire sdo_valid_i,
+    output reg sdo_ready_o,
 
     // SDI Interface
-    input wire sdi_ready_i,
-    output reg sdi_ready_o,
-    output reg [DATA_WIDTH-1:0] sdi_data_o,
-    output reg sdi_valid_o
+    (* MARK_DEBUG = "TRUE" *) input wire sdi_ready_i,
+    (* MARK_DEBUG = "TRUE" *) output reg sdi_ready_o,
+    (* MARK_DEBUG = "TRUE" *) output reg [DATA_WIDTH-1:0] sdi_data_o,
+    (* MARK_DEBUG = "TRUE" *) output reg sdi_valid_o
 
     //// FSM Interface
     //,output reg [5:0] st_cur
@@ -70,13 +70,12 @@ module spi_module
 //wire clk_w;
 
 // parallel to serial counter
-(* MARK_DEBUG = "TRUE" *) reg [$clog2(DATA_WIDTH):0] sdo_counter_r;
+reg [$clog2(DATA_WIDTH):0] sdo_counter_r;
 //reg [$clog2(DATA_WIDTH):0] sdo_counter_r;
-reg [$clog2(DATA_WIDTH):0] sdi_counter_r;
+(* MARK_DEBUG = "TRUE" *) reg [$clog2(DATA_WIDTH):0] sdi_counter_r;
 
 // SDO DATA REGISTER
-(* MARK_DEBUG = "TRUE" *) reg [DATA_WIDTH-1:0] sdo_data_r;
-//reg [DATA_WIDTH-1:0] sdo_data_r;
+reg [DATA_WIDTH-1:0] sdo_data_r;
 //reg [DATA_WIDTH-1:0] sdo_data_r1;
 //reg [DATA_WIDTH-1:0] sdo_data_r2;
 //
@@ -272,7 +271,7 @@ always @(posedge clk_i or negedge rst_n) begin
     end
 end
 
-assign sck_o = (st_cur == WRITE_DATA) ? ~clk_i : (st_cur == READ_DATA) ? clk_i : RD1_WR0;
+assign sck_o = (st_cur == WRITE_DATA) ? ~clk_i : ((st_cur == READ_DATA) || (st_cur == READ_READY)) ? clk_i : RD1_WR0;
 //assign clk_w = ((st_cur == IDLE) || (st_cur == WRITE_VALID) || (st_cur == WRITE_DATA) || (st_cur == WRITE_DONE)) ? clk_i : ((st_cur == READ_READY) || (st_cur == READ_DATA) || (st_cur == READ_DONE)) ? sck_i : clk_i;
 //assign clk_w = clk_i;
 //assign clk_w = (st_cur == READ_DATA) ? sck_i : clk_i;
