@@ -34,10 +34,23 @@ module adc_read_module(
 
     wire [15:0] adc_data_w;
     wire enable;
+    wire adc_sdi_valid_o;
+    reg [15:0] adc_data_r;
+
+    always @(posedge clk_adc or negedge rst_n) begin
+        if (!rst_n) begin
+            adc_data_r <= 0;
+        end else if (adc_sdi_valid_o) begin
+            adc_data_r <= adc_data_w;
+        end
+        else begin
+            adc_data_r <= adc_data_r;
+        end
+    end
 
     adc_tri adc_tri_inst (
         .clk(clk_adc),
-        .probe_in0(adc_data_w),
+        .probe_in0(adc_data_r),
         .probe_out0(enable)
     );
 
@@ -78,7 +91,7 @@ module adc_read_module(
         .sdi_ready_i(adc_cnv_n_o),
         .sdi_ready_o(),
         .sdi_data_o(adc_data_w),
-        .sdi_valid_o()
+        .sdi_valid_o(adc_sdi_valid_o)
     );
 
 endmodule

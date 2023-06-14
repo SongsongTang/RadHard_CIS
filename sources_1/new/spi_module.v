@@ -186,12 +186,13 @@ always @(*) begin
         end
 
         READ_DONE: begin
-            if (sdi_ready_i == 1'b1) begin
-                st_nxt = READ_READY;
-            end
-            else begin
-                st_nxt = IDLE;
-            end
+            st_nxt = READ_READY;
+            //if (sdi_ready_i == 1'b1) begin
+            //    st_nxt = READ_READY;
+            //end
+            //else begin
+            //    st_nxt = IDLE;
+            //end
         end
 
         default: st_nxt = IDLE;
