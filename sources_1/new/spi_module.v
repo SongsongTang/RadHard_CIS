@@ -66,7 +66,7 @@ localparam READ_READY   = 7'b0_010_000;
 localparam READ_DATA    = 7'b0_100_000;
 localparam READ_DONE    = 7'b1_000_000;
 
-// machine variable
+// machine variable 
 (* MARK_DEBUG = "TRUE" *) reg [6:0] st_nxt;
 (* MARK_DEBUG = "TRUE" *) reg [6:0] st_cur = IDLE;
 
